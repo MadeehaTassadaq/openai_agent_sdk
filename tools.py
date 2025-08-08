@@ -1,7 +1,13 @@
 import os 
 from openai import AsyncOpenAI
 import requests,random
-from agents import Agent,OpenAIChatCompletionsModel,Runner,set_tracing_disabled,RunConfig,function_tool
+from agents import (Agent,
+                    OpenAIChatCompletionsModel,
+                    Runner,
+                    set_tracing_disabled,
+                    RunConfig,
+                    function_tool, 
+                    ModelSettings)
 from openai.types.responses import ResponseTextDeltaEvent
 from dotenv import load_dotenv
 import chainlit as cl
@@ -13,7 +19,7 @@ client=AsyncOpenAI(api_key=gemini_api_key,
 )
 
 model=OpenAIChatCompletionsModel(openai_client=client,
-                                 model="gemini-2.5-flash")
+                                 model="gemini-2.0-flash")
 set_tracing_disabled(disabled=True)
 config=RunConfig(model=model)
 
@@ -38,7 +44,8 @@ agent :Agent= Agent(name="Madeeha",
         "If the user asks for weather, call the `get_weather` function with the city name."
     ),
     model=model,
-    tools=[how_many_jokes, get_weather]
+    tools=[how_many_jokes, get_weather],
+    model_settings=ModelSettings(tool_choice="get_weather") 
 )
 
 @cl.on_chat_start
@@ -47,15 +54,20 @@ async def handle_start():
     await cl.Message(content="Hello I am a weather agent i can help you tell weather?").send()
 
 @cl.on_message
-async def handle_message(message:cl.on_message):
-    history=cl.user_session.get("history")
-    history.append({"role":"user","content":message.content})
+async def handle_message(message:cl.Message):
+    """Handles incoming messages and interacts with the agent."""
+    history = cl.user_session.get("history", [])
+    if history is None:
+        history = []
+    history.append({"role": "user", "content": message.content})
+    cl.user_session.set("history", history)
+    await cl.Message(content="Thinking...").send()
     
     msg=cl.Message(content="")
     await msg.send()
     result=Runner.run_streamed(
         agent,
-        input=history,
+        input=message.content,
         run_config=config
     )
     async for event in result.stream_events():
