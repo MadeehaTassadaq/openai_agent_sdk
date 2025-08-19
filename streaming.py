@@ -1,7 +1,7 @@
 import os 
 import asyncio
 from openai import AsyncOpenAI
-from agents import Agent,OpenAIChatCompletionsModel,Runner,set_tracing_disabled,RunConfig
+from agents import Agent,OpenAIChatCompletionsModel,Runner,set_tracing_disabled
 from openai.types.responses import ResponseTextDeltaEvent
 from dotenv import load_dotenv
 load_dotenv()
