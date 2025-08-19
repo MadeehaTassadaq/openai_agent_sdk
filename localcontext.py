@@ -1,6 +1,6 @@
 from agents import (Agent, OpenAIChatCompletionsModel, 
                     Runner, set_tracing_disabled,
-                    RunConfig, function_tool,RunContextWrapper)
+                     function_tool,RunContextWrapper)
 from openai import AsyncOpenAI
 import asyncio
 import os
@@ -10,7 +10,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 client = AsyncOpenAI(
-    api_key=os.getenv("gemini_api_key"),
+    api_key=GEMINI_API_KEY,
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/")
 
 model= OpenAIChatCompletionsModel(

@@ -11,4 +11,5 @@ dependencies = [
     "litellm>=1.74.0",
     "openai>=1.93.0",
     "openai-agents>=0.1.0",
+    "requests>=2.32.3",
 ]

@@ -26,19 +26,22 @@ async def can_customer_refund(local_context:RunContextWrapper[CurrentUser],agent
     print("local_context :",local_context.context)
     print("agent :",agent)
     if local_context.context and local_context.context.is_logged_in:
-        True
+        return True
     return False
 
 @function_tool
 def weather_in_city(city:str)->str:
-    return "The weather in {city} is sunny"
+    return f"The weather in {city} is sunny"
 
 billing_agent = Agent(name="Billing agent",model=model)
 refund_agent = Agent(name="Refund agent",model=model)
 
-triage_agent = Agent(name="Triage agent", 
-handoffs=[handoff(agent=refund_agent,
-is_enabled=True,input_filter=can_customer_refund)
+triage_agent = Agent(
+    name="Triage agent", 
+    model=model,
+    handoffs=[handoff(agent=refund_agent,
+    is_enabled=True,
+    input_filter=can_customer_refund)
 ])
 
 async def main():
